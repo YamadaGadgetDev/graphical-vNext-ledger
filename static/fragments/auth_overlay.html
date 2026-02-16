@@ -1,0 +1,23 @@
+<!-- static/fragments/auth_overlay.html (CSP-safe / no inline JS) -->
+<div id="authOverlay" class="auth-overlay hidden" aria-hidden="true">
+  <div class="auth-panel" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+    <h2 id="authTitle">Login</h2>
+    <p id="authMsg" class="auth-msg">セッションがありません。パスワードを入力してください。</p>
+
+    <form id="authForm" class="auth-form">
+      <input id="authPassword"
+             type="password"
+             autocomplete="current-password"
+             autocapitalize="none"
+             inputmode="latin"
+             placeholder="password"
+             required />
+      <button id="authTogglePw" type="button" class="icon-btn" aria-label="Show password" aria-pressed="false">👁</button>
+      <button type="submit" class="btn btn--primary">Login</button>
+      <button id="authLogout" type="button" class="btn btn--soft">Logout</button>
+    </form>
+
+    <p class="auth-help">半角英数字で入力してください（IMEが日本語のままの可能性があります）</p>
+    <p class="auth-help">viewer / operator / dev / admin の切替は、ここで別のパスワードを再入力するだけで良い。</p>
+  </div>
+</div>

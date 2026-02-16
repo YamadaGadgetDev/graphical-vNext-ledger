@@ -1,0 +1,848 @@
+/* vNext Ledger UI Stylesheet (Renewed)
+   Design Philosophy: Monochrome, low-cognitive-load, CSP-friendly
+   Goal: Keep the same tone, but tighten rhythm, spacing, and modal layout.
+*/
+
+/* ============================================================
+   1) Variables & Reset
+   ============================================================ */
+:root {
+  /* Monochrome palette */
+  --bg: #ffffff;
+  --paper: #fbfbfb;
+  --paper2: #f6f6f6;
+  --text: #0a0a0a;
+  --muted: #4b5563;
+  --faint: #6b7280;
+
+  /* Lines */
+  --line: rgba(17,17,17,.92);
+  --line2: rgba(17,17,17,.16);
+  --line3: rgba(17,17,17,.10);
+
+  /* Surfaces */
+  --hover: rgba(17,17,17,.05);
+  --soft: rgba(17,17,17,.035);
+
+  /* Effects */
+  --shadow: 0 10px 30px rgba(0,0,0,.08);
+  --shadow-lg: 0 14px 40px rgba(0,0,0,.18);
+  --shadow-xl: 0 20px 60px rgba(0,0,0,.26);
+
+  /* Radii */
+  --radius: 14px;
+  --radius-sm: 10px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  /* Fonts */
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+
+  /* Spacing */
+  --space-2xs: 6px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 14px;
+  --space-lg: 18px;
+  --space-xl: 24px;
+
+  /* Transitions */
+  --transition-fast: .12s;
+  --transition-base: .18s;
+  --transition-slow: .28s;
+
+  /* Focus */
+  --focus: rgba(17,17,17,.35);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+
+body {
+  font-family: var(--mono);
+  color: var(--text);
+  background: var(--paper);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+code, pre, kbd, samp { font-family: var(--mono); }
+
+a { color: inherit; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Make form controls inherit font nicely */
+input, select, textarea, button {
+  font: inherit;
+}
+
+/* ============================================================
+   2) Layout
+   ============================================================ */
+.container {
+  max-width: 1280px;
+  margin: 22px auto;
+  background: var(--bg);
+  border: 1px solid var(--line2);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: var(--space-xl);
+}
+
+header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+  padding-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--line2);
+}
+
+h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: .01em;
+  line-height: 1.15;
+}
+
+.subtitle {
+  font-family: var(--sans);
+  font-size: .98rem;
+  color: var(--muted);
+  margin-top: var(--space-xs);
+}
+
+/* Footer */
+footer {
+  margin-top: var(--space-xl);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--line2);
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: .92rem;
+}
+.footer-slogan { margin-top: var(--space-sm); color: var(--faint); }
+.footer-credit { margin-top: var(--space-xs); color: var(--faint); }
+
+/* ============================================================
+   3) Status badge (role)
+   ============================================================ */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 7px 12px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--line2);
+  background: var(--soft);
+  font-size: .88rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.status-badge::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border-radius: var(--radius-pill);
+  background: rgba(17,17,17,.55);
+  border: 1px solid rgba(17,17,17,.25);
+}
+
+.status-badge.online::before { background: rgba(17,17,17,.85); }
+
+/* ============================================================
+   4) Buttons
+   ============================================================ */
+button,
+.btn {
+  appearance: none;
+  border: 1px solid var(--line2);
+  background: var(--bg);
+  color: var(--text);
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: .92rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition: transform var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+}
+
+button:hover,
+.btn:hover {
+  background: var(--hover);
+  border-color: rgba(17,17,17,.22);
+  transform: translateY(-1px);
+}
+
+button:active,
+.btn:active { transform: translateY(0); }
+
+button:focus-visible,
+.btn:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+button[disabled],
+.btn[disabled],
+button:disabled,
+.btn:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Button variants used by index.htmx + modal */
+button.primary,
+.btn--primary {
+  background: rgba(17,17,17,.95);
+  color: #fff;
+  border-color: rgba(17,17,17,.95);
+}
+button.primary:hover,
+.btn--primary:hover {
+  background: rgba(17,17,17,.86);
+  border-color: rgba(17,17,17,.86);
+}
+
+button.neutral,
+.btn--soft {
+  background: var(--soft);
+}
+
+button.safe {
+  border-color: rgba(17,17,17,.28);
+  background: rgba(17,17,17,.03);
+}
+
+button.info {
+  border-color: rgba(17,17,17,.22);
+  background: rgba(17,17,17,.02);
+}
+
+button.danger {
+  border-color: rgba(17,17,17,.35);
+  background: rgba(17,17,17,.04);
+}
+
+button.dangerous {
+  background: rgba(17,17,17,.95);
+  color: #fff;
+  border-color: rgba(17,17,17,.95);
+}
+button.dangerous:hover {
+  background: rgba(17,17,17,.86);
+}
+
+.icon-btn {
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line2);
+  background: var(--soft);
+}
+
+/* ============================================================
+   5) Controls & Filters
+   ============================================================ */
+.controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: var(--space-sm);
+}
+
+#filters,
+.filters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: var(--space-sm);
+  border: 1px solid var(--line2);
+  border-radius: var(--radius-sm);
+  background: var(--paper2);
+  margin-bottom: var(--space-sm);
+}
+
+#filters input[type="text"],
+#filters input[type="date"],
+#filters select,
+.filters input[type="text"],
+.filters input[type="date"],
+.filters select {
+  padding: 10px 10px;
+  border: 1px solid var(--line2);
+  border-radius: var(--radius-sm);
+  font-family: var(--sans);
+  font-size: .92rem;
+  background: var(--bg);
+  min-height: 40px;
+  transition: border-color var(--transition-base), background var(--transition-base);
+}
+
+#filters input[type="text"],
+.filters input[type="text"] { flex: 1 1 320px; }
+
+#filters input:hover,
+#filters select:hover,
+.filters input:hover,
+.filters select:hover { border-color: rgba(17,17,17,.25); }
+
+#filters input::placeholder { color: rgba(17,17,17,.42); }
+
+/* ============================================================
+   6) Tables & Badges
+   ============================================================ */
+.table-container {
+  border: 1px solid var(--line2);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--bg);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--sans);
+  font-size: .93rem;
+}
+
+/* Override legacy border attribute */
+table[border],
+table[border="1"] { border: none; }
+
+th, td {
+  border-bottom: 1px solid var(--line3);
+  padding: 12px 12px;
+  vertical-align: top;
+}
+
+thead th {
+  background: linear-gradient(var(--bg), var(--bg));
+  border-bottom: 1px solid var(--line2);
+  text-align: left;
+  font-weight: 700;
+  color: rgba(17,17,17,.78);
+  font-size: .86rem;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+}
+
+tbody tr:hover { background: rgba(17,17,17,.018); }
+
+td code { font-family: var(--mono); font-size: .92rem; }
+td a.js-open-note code { text-decoration: none; }
+td a.js-open-note:hover code { text-decoration: underline; }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--line2);
+  background: var(--soft);
+  font-size: .86rem;
+  line-height: 1.2;
+  font-family: var(--sans);
+}
+
+/* status-{status} (monochrome emphasis) */
+.badge[class*="status-"] {
+  border-color: rgba(17,17,17,.18);
+  background: rgba(17,17,17,.03);
+  color: rgba(17,17,17,.78);
+}
+.badge.status-stale { background: rgba(17,17,17,.06); border-color: rgba(17,17,17,.22); }
+
+/* Row actions buttons inside table */
+td button.js-delete,
+td button.js-restore,
+td button.js-purge {
+  padding: 8px 10px;
+  font-size: .86rem;
+  border-radius: 10px;
+}
+
+/* ============================================================
+   7) Loading indicator
+   ============================================================ */
+.loading {
+  padding: 34px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--sans);
+  color: var(--muted);
+}
+.spinner {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  border: 2px solid rgba(17,17,17,.12);
+  border-top-color: rgba(17,17,17,.55);
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============================================================
+   8) Modals (note modal + auth overlay)
+   ============================================================ */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.48);
+  padding: 7vh 6vw;
+  z-index: 50;
+  display: none;
+  overflow: auto;
+}
+
+.modal-backdrop.show {
+  display: flex !important;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+/* Backstop: hidden wins */
+.modal-backdrop[hidden] { display: none !important; }
+
+.modal {
+  width: min(920px, 100%);
+  background: var(--bg);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line2);
+  box-shadow: var(--shadow-xl);
+  padding: 18px;
+}
+
+/* NOTE MODAL */
+.note-modal {
+  padding: 18px 18px 16px;
+}
+
+.note-modal .modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line2);
+}
+
+.note-modal .modal-header h2 {
+  font-family: var(--mono);
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: .01em;
+}
+
+.note-modal .modal-header code {
+  font-size: 1.02em;
+}
+
+.note-modal .modal-close {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid var(--line2);
+  background: var(--soft);
+  font-size: 1.4rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.note-modal .modal-close:hover {
+  background: var(--hover);
+  border-color: rgba(17,17,17,.22);
+}
+
+/* sections */
+.note-modal .modal-section {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line3);
+}
+.note-modal .modal-section:last-child { border-bottom: none; }
+
+.note-modal .modal-section h3 {
+  font-family: var(--sans);
+  font-size: .92rem;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  color: rgba(17,17,17,.72);
+  margin-bottom: 10px;
+}
+
+/* field group */
+.note-modal .modal-fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.note-modal .modal-fields label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: var(--sans);
+  font-size: .82rem;
+  color: var(--muted);
+}
+
+.note-modal .modal-fields select {
+  width: 100%;
+  padding: 10px 10px;
+  border: 1px solid var(--line2);
+  border-radius: 12px;
+  background: var(--bg);
+  font-size: .92rem;
+  color: var(--text);
+}
+.note-modal .modal-fields select:disabled {
+  background: rgba(17,17,17,.03);
+  color: rgba(17,17,17,.45);
+}
+
+/* comment */
+.note-modal textarea#modal-comment {
+  width: 100%;
+  padding: 12px 12px;
+  border: 1px solid var(--line2);
+  border-radius: 12px;
+  background: var(--bg);
+  font-family: var(--sans);
+  font-size: .95rem;
+  line-height: 1.5;
+  resize: vertical;
+  min-height: 92px;
+}
+
+.note-modal .modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* event list */
+.event-list,
+.evidence-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.event-list li,
+.evidence-list li {
+  border: 1px solid var(--line3);
+  background: rgba(17,17,17,.02);
+  border-radius: 12px;
+  padding: 10px 10px;
+  font-family: var(--sans);
+  font-size: .92rem;
+}
+
+.event-list li.event-comment { background: rgba(17,17,17,.03); }
+
+.event-time {
+  font-family: var(--mono);
+  font-size: .88rem;
+  color: rgba(17,17,17,.55);
+  margin-right: 8px;
+}
+
+.event-type {
+  font-family: var(--mono);
+  font-size: .86rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--line3);
+  background: rgba(17,17,17,.02);
+  margin-right: 8px;
+}
+
+.event-diff,
+.event-body {
+  color: rgba(17,17,17,.78);
+}
+
+/* evidence code blocks remain readable */
+.evidence-list code {
+  font-family: var(--mono);
+  font-size: .9rem;
+}
+
+/* flash (✓) */
+.flash-ok {
+  font-family: var(--mono);
+  font-weight: 800;
+  font-size: .9rem;
+  color: rgba(17,17,17,.78);
+  opacity: .9;
+  margin-left: 6px;
+  animation: flashFade 1.2s ease-out forwards;
+}
+
+@keyframes flashFade {
+  0%   { opacity: 0; transform: translateY(2px); }
+  15%  { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-1px); }
+}
+
+/* ============================================================
+   9) Auth overlay (static fragment)
+   ============================================================ */
+body.auth-locked { overflow: hidden; }
+
+body.auth-locked .container {
+  filter: blur(8px);
+  pointer-events: none;
+  user-select: none;
+}
+
+.auth-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,.60);
+  z-index: 9999;
+}
+
+.auth-overlay.hidden { display: none; }
+
+.auth-panel {
+  width: min(560px, 92vw);
+  background: var(--bg);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line2);
+  padding: 16px 16px 14px;
+  box-shadow: var(--shadow-xl);
+}
+
+.auth-panel h2 {
+  font-family: var(--mono);
+  font-size: 1.25rem;
+  margin-bottom: 6px;
+}
+
+.auth-msg {
+  font-family: var(--sans);
+  color: var(--muted);
+  font-size: .95rem;
+  margin-bottom: 12px;
+}
+
+.auth-form {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.auth-form input[type="password"] {
+  flex: 1 1 260px;
+  padding: 11px 12px;
+  border: 1px solid var(--line2);
+  border-radius: 12px;
+  background: var(--bg);
+  font-family: var(--sans);
+}
+
+.auth-help {
+  margin-top: 12px;
+  font-family: var(--sans);
+  font-size: .88rem;
+  color: var(--faint);
+}
+
+/* ============================================================
+   10) Responsive
+   ============================================================ */
+@media (max-width: 860px) {
+  .container { margin: 12px; padding: 16px; }
+  header { flex-direction: column; align-items: flex-start; }
+  h1 { font-size: 1.9rem; }
+  .note-modal .modal-fields { grid-template-columns: 1fr; }
+  .modal-backdrop { padding: 5vh 4vw; }
+}
+
+
+/* ============================================================
+   Header Layout v3 (requested): title row + subtitle row + actions row
+   - Row 1: H1 (full width)
+   - Row 2: subtitle (standalone row, right-aligned)
+   - Row 3: role badge + login button (same height, grouped)
+   Notes:
+   - Guard scope is JS concern; CSS only changes layout.
+   - If offline/tagline elements still exist in HTML, they are hidden.
+   ============================================================ */
+header {
+  /* override earlier header layout */
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: var(--space-md);
+  row-gap: var(--space-xs);
+}
+
+header > h1 {
+  grid-column: 1;
+  grid-row: 1;
+  margin: 0;
+}
+
+header > #roleBadge {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+}
+
+header > #openLogin {
+  grid-column: 3;
+  grid-row: 1;
+  justify-self: end;
+}
+
+header > .subtitle {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  justify-self: start;
+  text-align: left;
+  margin: 0;
+}
+
+/* Hide deprecated header bits if still present */
+header > .status-badge.offline,
+header > .tagline {
+  display: none;
+}
+
+/* Make role badge and login button visually aligned */
+header #roleBadge,
+header #openLogin {
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+}
+
+header #roleBadge {
+  padding: 0 14px;
+  font-size: .90rem;
+}
+
+header #openLogin {
+  padding: 0 16px;
+  border-radius: var(--radius-pill);
+}
+
+/* Keep header readable on small screens */
+@media (max-width: 720px) {
+  header {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto auto;
+    row-gap: var(--space-xs);
+  }
+  header > h1 {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  header > .subtitle {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  header > #roleBadge {
+    grid-column: 1;
+    grid-row: 3;
+    justify-self: start;
+  }
+  header > #openLogin {
+    grid-column: 1;
+    grid-row: 4;
+    justify-self: start;
+  }
+}
+
+
+
+
+/* ============================================================
+   Header layout override (v4): title left, role+login right;
+   subtitle on its own row (left). Safe to keep at file end.
+   ============================================================ */
+header{
+  display:grid;
+  grid-template-columns:1fr auto auto;
+  grid-template-rows:auto auto;
+  align-items:center;
+  column-gap:var(--space-md);
+  row-gap:var(--space-xs);
+}
+header>h1{grid-column:1;grid-row:1;margin:0;}
+header>#roleBadge{grid-column:2;grid-row:1;justify-self:end;}
+header>#openLogin{grid-column:3;grid-row:1;justify-self:end;}
+header>.subtitle{
+  grid-column:1 / -1;
+  grid-row:2;
+  justify-self:start;
+  text-align:left;
+  margin:0;
+}
+header>.status-badge.offline,
+header>.tagline{display:none;}
+header #roleBadge,
+header #openLogin{
+  height:40px;
+  display:inline-flex;
+  align-items:center;
+}
+
+/* ============================================================
+   Footer — center the closing block (privacy + slogans)
+   ============================================================ */
+footer{
+  text-align:center;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+footer>p{
+  margin-left:auto;
+  margin-right:auto;
+}
+
+/* ============================================================
+   Role badge icon — replace status dot with crown (UI-only)
+   Safe: overrides only the ::before pseudo-element
+   ============================================================ */
+#roleBadge::before {
+  content: "👑";
+  width: auto;
+  height: auto;
+  background: transparent;
+  border: none;
+  font-size: 1rem;
+  line-height: 1;
+}
+

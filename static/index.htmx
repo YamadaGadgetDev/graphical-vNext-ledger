@@ -1,0 +1,187 @@
+<!-- root/vnext-ledger/index.htmx -->
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>vNext Ledger - 判断を失わない小帳</title>
+  <link rel="stylesheet" href="/static/ui.css">
+  <script src="/static/vendor/htmx.min.js"></script>
+  <script src="/static/ui.js" defer></script>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <h1>vNext Ledger</h1>
+      <span id="roleBadge" class="status-badge online">role: ?</span>
+      <button id="openLogin" type="button" class="primary">
+        <span>🔑</span><span>Login / Role</span>
+      </button>
+      <p class="subtitle">設計判断を失わないための軽量小帳</p>
+    </header>
+    
+    <!-- Controls -->
+    <div class="controls">
+      <button
+        hx-post="/scan"
+        hx-headers='{"Accept":"text/html"}'
+        hx-target="#result"
+        hx-swap="innerHTML"
+        data-min-role="operator"
+        hidden
+        class="safe">
+        <span>📊</span>
+        <span>差分スキャン</span>
+      </button>
+
+      <button
+        hx-post="/scan?full=1"
+        hx-headers='{"Accept":"text/html"}'
+        hx-target="#result"
+        hx-swap="innerHTML"
+        hx-confirm="⚠️ 世界を閉じますか?&#10;&#10;この操作は以下を実行します:&#10;• stale 化(見つからない判断を陳腐化)&#10;• orphan 削除(孤児ファイルの削除)&#10;&#10;不可逆な操作です。続けますか?"
+        data-min-role="admin"
+        hidden
+        class="dangerous">
+        <span>🔥</span>
+        <span>全走査(危険)</span>
+      </button>
+
+      <button
+        hx-get="/export/summary"
+        hx-headers='{"Accept":"text/html"}'
+        hx-target="#result"
+        hx-swap="innerHTML"
+        data-min-role="operator"
+        hidden
+        class="info">
+        <span>📈</span>
+        <span>サマリ表示</span>
+      </button>
+
+      <button
+        hx-get="/export/metrics?limit=10"
+        hx-headers='{"Accept":"text/html"}'
+        hx-target="#result"
+        hx-swap="innerHTML"
+        data-min-role="operator"
+        hidden
+        class="neutral">
+        <span>📊</span>
+        <span>メトリクス</span>
+      </button>
+    </div>
+
+    <!-- Result Panel -->
+    <div id="result"></div>
+
+    <!-- Filters (唯一の状態 / 唯一の更新トリガ) -->
+    <form id="filters"
+          hx-get="/notes/table"
+          hx-target="#notesTable"
+          hx-swap="innerHTML"
+          hx-trigger="
+            refresh,
+            keyup changed delay:300ms from:#q,
+            change from:#status,
+            change from:#priority,
+            change from:#comment,
+            change from:#risk_level,
+            change from:#since,
+            change from:#until
+          ">
+
+      <input id="q" name="q" type="text"
+             placeholder="🔍 検索(slug/owner/decision/path)" />
+
+      <select id="status" name="status">
+        <option value="">status: all</option>
+        <option value="open">open</option>
+        <option value="doing">doing</option>
+        <option value="parked">parked</option>
+        <option value="done">done</option>
+        <option value="stale">stale</option>
+      </select>
+
+      <select id="priority" name="priority">
+        <option value="">priority: all</option>
+        <option value="none">priority: none（未評価）</option>
+        <option value="1">1（高優先）</option>
+        <option value="2">2（中優先）</option>
+        <option value="3">3（低優先）</option>
+      </select>
+
+      <select id="comment" name="comment">
+        <option value="">comment: all</option>
+        <option value="any">comment: あり</option>
+        <option value="none">comment: なし</option>
+      </select>
+
+      <select id="risk_level" name="risk_level">
+        <option value="">risk: all</option>
+        <option value="high">risk: high</option>
+        <option value="critical">risk: critical</option>
+        <option value="none">risk: none（通常）</option>
+      </select>
+
+      <!-- type=date: 入力事故を減らす -->
+      <input id="since" name="since" type="date" title="last_seen >= since" />
+      <input id="until" name="until" type="date" title="last_seen <= until" />
+
+      <!-- sort state (真実はクエリ) -->
+      <input type="hidden" id="sort" name="sort" value="priority" />
+      <input type="hidden" id="dir" name="dir" value="asc" />
+      <input type="hidden" id="deleted" name="deleted" value="" />
+
+      <button type="button"
+              id="toggleTrash"
+              class="danger"
+              data-min-role="dev"
+              hidden>
+        <span>🗑</span><span>Trash</span>
+      </button>
+
+      <button type="button"
+              id="clearFilters"
+              class="neutral">
+        <span>🧹</span><span>クリア</span>
+      </button>
+    </form>
+
+    <!-- Ledger Table (表示だけ) -->
+    <div class="table-container">
+      <div id="notesTable">
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>小帳を読み込み中...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal (HTMX detail/edit) -->
+    <div id="modal" class="modal-backdrop" hidden></div>
+
+    <!-- Footer -->
+    <footer>
+      <p>
+        <strong>🔒 プライバシー</strong><br>
+        すべてのデータはローカルに保存されます。<br>
+        外部サーバーへの送信は行われません。
+      </p>
+      <p class="footer-slogan">
+        vNext Ledger — local-first decision tracking.
+      </p>
+      <p class="footer-credit">
+        Internal tool—inspired design
+      </p>
+    </footer>
+
+  </div>
+
+  <!-- Auth Overlay is injected by ui.js (lazy-loaded from /static/fragments/auth_overlay.html) -->
+  <div id="authOverlayMount" data-auth-overlay-mount="1"></div>
+
+</body>
+</html>
